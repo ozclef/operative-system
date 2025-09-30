@@ -1,3 +1,412 @@
+
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mi OS Web</title>
+  <link rel="stylesheet" href="OS.css" />
+  <script defer src="OS.js"></script>
+  <style>
+/* OS.css - estilos del sistema */
+:root{
+  --bg:#1e1e1e;
+  --window:#2e2e2e;
+  --topbar:#444;
+  --accent:#1abc9c;
+  --muted:#777;
+  --task:#333;
+  --text:#fff;
+  --glass:rgba(255,255,255,0.03);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+[data-window]{position:absolute;left:80px;top:80px}
+.ventana{display:block;width:420px;background:var(--window);border:1px solid rgba(0,0,0,0.5);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.6);overflow:hidden;}
+.ventana.grande{width:620px;height:420px}
+.topbar{background:linear-gradient(180deg,var(--topbar),#3b3b3b);padding:8px 10px;display:flex;align-items:center;justify-content:space-between;cursor:move;user-select:none}
+.topbar span{font-weight:600}
+.topbar-controls{display:flex;gap:6px}
+.topbar button{background:transparent;border:none;color:var(--text);font-weight:700;padding:4px 8px;border-radius:4px;cursor:pointer}
+.topbar button:hover{background:var(--glass)}
+.contenido{padding:12px;font-size:14px}
+.apps-lista{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.apps-lista button{display:inline-flex;align-items:center;gap:8px;background:#3a3a3a;border:none;padding:8px 10px;border-radius:6px;color:var(--text);cursor:pointer}
+.apps-lista img{width:20px;height:20px;object-fit:cover}
+
+.browser-controls{display:flex;gap:8px;align-items:center}
+.browser-controls input{flex:1;padding:6px 8px;border-radius:6px;border:1px solid #555;background:#262626;color:var(--text)}
+.browser-controls button{padding:6px 10px;border-radius:6px;border:none;background:var(--accent);color:#042;cursor:pointer}
+
+iframe{width:100%;height:300px;border:none;border-radius:6px;margin-top:10px;background:#fff}
+
+/* Barra inferior */
+.barra-inferior{position:fixed;left:0;right:0;bottom:0;height:52px;background:var(--task);display:flex;align-items:center;justify-content:space-between;padding:6px 12px;gap:12px;box-shadow:0 -6px 18px rgba(0,0,0,0.6);z-index:9999}
+.barra-izq{display:flex;align-items:center;gap:8px}
+.barra-izq input{padding:8px;border-radius:8px;border:none;background:#2a2a2a;color:var(--text);width:240px}
+.barra-izq button{background:#444;border:none;padding:8px 10px;border-radius:8px;color:var(--text);cursor:pointer}
+.barra-der{display:flex;align-items:center;gap:8px}
+.reloj{min-width:180px;text-align:right;color:var(--muted);font-weight:600}
+.button-active{background:linear-gradient(90deg,var(--accent),#16a085);color:#042}
+
+/* Ventanas dinamicas pequeñas */
+.ventana.small{width:320px}
+textarea{width:100%;border-radius:6px;padding:8px;border:1px solid #555;background:#222;color:var(--text)}
+
+/* Estilos de lista de archivos */
+#file-list{margin-top:8px;display:flex;flex-direction:column;gap:6px}
+.file-item{background:#262626;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.03);display:flex;justify-content:space-between;align-items:center}
+/*
+CSS (añadir a OS.css)
+```css
+/* Terminal UI básica */
+.terminal{width:520px;background:#0f1113;color:#cfe8d6;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.6)}
+.term-body{padding:10px;font-family:monospace;font-size:13px}
+.term-output{height:240px;overflow:auto;background:#071014;padding:8px;border-radius:6px;border:1px solid #0b2a30}
+.term-line{white-space:pre-wrap;margin-bottom:6px}
+.term-input-line{display:flex;gap:8px;align-items:center;margin-top:8px}
+.prompt{color:#66e0a3;font-weight:700}
+.term-input{flex:1;background:transparent;border:none;color:inherit;outline:none;font-family:monospace;font-size:13px}
+.term-btns{display:flex;gap:6px}
+    </style>
+</head>
+<body>
+  <!-- Ventana principal: Menú de inicio -->
+  <div id="menu-principal" class="ventana grande" data-window>
+    <div class="topbar" onmousedown="startDrag(event, 'menu-principal')">
+      <span>🌟 Operativ</span>
+      <div class="topbar-controls">
+        <button class="minimizar" onclick="minimizar('menu-principal')">—</button>
+        <button class="cerrar" onclick="cerrar('menu-principal')">✖</button>
+      </div>
+    </div>
+    <div class="contenido">
+      <h2>Aplicaciones del Sistema</h2>
+      <div class="apps-lista">
+        <button onclick="abrir('browser')"><img src="" alt=""> Navegador</button>
+        <button onclick="abrir('archivos')"><img src="" alt=""> Archivos</button>
+        <button onclick="abrir('config')"><img src="" alt=""> Configuración</button>
+        <button onclick="crearVentana('Nota rápida','<p>Escribe tu nota aquí.</p><textarea style=&quot;width:100%;height:120px;&quot;></textarea>')">📝 Nueva nota</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ventana Navegador -->
+  <div id="browser" class="ventana" data-window style="display:none;">
+    <div class="topbar" onmousedown="startDrag(event, 'browser')">
+      <span>🌐 Navegador Web</span>
+      <div class="topbar-controls">
+        <button class="minimizar" onclick="minimizar('browser')">—</button>
+        <button class="cerrar" onclick="cerrar('browser')">✖</button>
+      </div>
+    </div>
+    <div class="contenido">
+      <div class="browser-controls">
+        <input id="url-browser" type="text" placeholder="Escribe una URL y pulsa Enter" onkeydown="if(event.key==='Enter') cargarSitio()" />
+        <button onclick="cargarSitio()">Ir</button>
+      </div>
+      <iframe id="visor-browser" sandbox="allow-same-origin allow-forms allow-scripts" title="Visor"></iframe>
+    </div>
+  </div>
+
+  <!-- Ventana Archivos -->
+  <div id="archivos" class="ventana" data-window style="display:none;">
+    <div class="topbar" onmousedown="startDrag(event, 'archivos')">
+      <span>📁 Archivos</span>
+      <div class="topbar-controls">
+        <button class="minimizar" onclick="minimizar('archivos')">—</button>
+        <button class="cerrar" onclick="cerrar('archivos')">✖</button>
+      </div>
+    </div>
+    <div class="contenido">
+      <p>Lector de archivos simple. Selecciona archivos aquí:</p>
+      <input type="file" id="file-input" multiple onchange="leerArchivos(event)" />
+      <div id="file-list"></div>
+    </div>
+  </div>
+
+  <!-- Ventana Configuración -->
+  <div id="config" class="ventana" data-window style="display:none;">
+    <div class="topbar" onmousedown="startDrag(event, 'config')">
+      <span>⚙️ Configuración</span>
+      <div class="topbar-controls">
+        <button class="minimizar" onclick="minimizar('config')">—</button>
+        <button class="cerrar" onclick="cerrar('config')">✖</button>
+      </div>
+    </div>
+    <div class="contenido">
+      <p>Ajustes rápidos</p>
+      <label><input id="persist-state" type="checkbox" /> Guardar posiciones en esta sesión</label>
+      <p style="margin-top:8px">Atajos:</p>
+      <div class="apps-lista">
+        <button onclick="abrir('menu-principal')">🪟 Inicio</button>
+        <button onclick="abrir('browser')">🌐 Navegador</button>
+        <button onclick="abrir('archivos')">📁 Archivos</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenedor para ventanas dinámicas -->
+  <div id="windows-container"></div>
+
+  <!-- Barra inferior -->
+  <div class="barra-inferior">
+    <div class="barra-izq">
+      <button class="inicio" onclick="abrir('menu-principal')">🪟 Inicio</button>
+      <input id="buscador" placeholder="Buscar o escribir URL..." onkeydown="if(event.key==='Enter') quickSearch()" />
+      <button onclick="quickSearch()">🔍</button>
+    </div>
+    <div class="barra-der">
+      <div id="reloj" class="reloj" title="Hora Centro México"></div>
+      <button class="nuevo" onclick="crearVentana('Terminal','<pre style=&quot;color:#0f0;background:#000;padding:8px;height:120px;overflow:auto;&quot;>$ echo hola</pre>')">➕</button>
+    </div>
+  </div>
+
+  <!-- Estilos mínimos para mobile fallback -->
+  <noscript>
+    <style>
+      .barra-inferior { position: static; }
+    </style>
+  </noscript>
+
+<script>
+// OS.js - lógica del sistema
+let zIndexCounter = 100;
+const windowsStateKey = 'mi_os_windows_state';
+let persistState = false;
+
+document.addEventListener('DOMContentLoaded', () => {
+  // reloj
+  setInterval(actualizarReloj, 1000);
+  actualizarReloj();
+
+  // activar persistencia desde checkbox si hay
+  const chk = document.getElementById('persist-state');
+  if (chk) {
+    chk.addEventListener('change', () => {
+      persistState = chk.checked;
+      if (!persistState) localStorage.removeItem(windowsStateKey);
+    });
+  }
+
+  // restaurar posiciones si existe
+  const saved = localStorage.getItem(windowsStateKey);
+  if (saved) {
+    try {
+      const obj = JSON.parse(saved);
+      for (const id in obj) {
+        const el = document.getElementById(id);
+        if (el) {
+          el.style.left = obj[id].left;
+          el.style.top = obj[id].top;
+        }
+      }
+    } catch (e) { console.warn('no se cargo estado', e) }
+  }
+});
+
+// Abrir ventana existente o crear dinámica
+function abrir(id) {
+  const el = document.getElementById(id);
+  if (!el) return console.warn('No existe ventana', id);
+  el.style.display = 'block';
+  bringToFront(el);
+}
+
+// Cerrar ventana
+function cerrar(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = 'none';
+  savePositions();
+}
+
+// Minimizar
+function minimizar(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = 'none';
+  savePositions();
+}
+
+// Traer al frente
+function bringToFront(el) {
+  zIndexCounter++;
+  el.style.zIndex = zIndexCounter;
+}
+
+// Drag básico por topbar
+let dragData = null;
+function startDrag(e, id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  bringToFront(el);
+  const rect = el.getBoundingClientRect();
+  const offsetX = e.clientX - rect.left;
+  const offsetY = e.clientY - rect.top;
+  dragData = {el, offsetX, offsetY};
+  document.addEventListener('mousemove', onDrag);
+  document.addEventListener('mouseup', stopDrag);
+  e.preventDefault();
+}
+function onDrag(e) {
+  if (!dragData) return;
+  const {el, offsetX, offsetY} = dragData;
+  el.style.left = (e.clientX - offsetX) + 'px';
+  el.style.top = (e.clientY - offsetY) + 'px';
+}
+function stopDrag() {
+  if (!dragData) return;
+  document.removeEventListener('mousemove', onDrag);
+  document.removeEventListener('mouseup', stopDrag);
+  dragData = null;
+  savePositions();
+}
+
+// Exponer para HTML inline
+window.startDrag = startDrag;
+window.abrir = abrir;
+window.cerrar = cerrar;
+window.minimizar = minimizar;
+
+// Crear ventanas dinámicas
+let windowCount = 0;
+function crearVentana(titulo, htmlContenido) {
+  windowCount++;
+  const id = 'ventana-dinamica-' + windowCount;
+  const win = document.createElement('div');
+  win.className = 'ventana small';
+  win.id = id;
+  win.setAttribute('data-window','');
+  win.style.display = 'block';
+  win.style.left = (120 + windowCount*20) + 'px';
+  win.style.top = (120 + windowCount*20) + 'px';
+  win.style.zIndex = ++zIndexCounter;
+
+  // topbar
+  const top = document.createElement('div');
+  top.className = 'topbar';
+  top.onmousedown = e => startDrag(e, id);
+
+  const span = document.createElement('span');
+  span.textContent = titulo;
+
+  const controls = document.createElement('div');
+  controls.className = 'topbar-controls';
+
+  const btnMin = document.createElement('button');
+  btnMin.className = 'minimizar';
+  btnMin.textContent = '—';
+  btnMin.onclick = () => { win.style.display = 'none'; savePositions(); };
+
+  const btnClose = document.createElement('button');
+  btnClose.className = 'cerrar';
+  btnClose.textContent = '✖';
+  btnClose.onclick = () => { win.remove(); savePositions(); };
+
+  controls.append(btnMin, btnClose);
+  top.append(span, controls);
+
+  const cont = document.createElement('div');
+  cont.className = 'contenido';
+  cont.innerHTML = htmlContenido;
+
+  win.append(top, cont);
+  document.body.appendChild(win);
+  savePositions();
+  return id;
+}
+window.crearVentana = crearVentana;
+
+// Buscador rápido
+function quickSearch() {
+  const q = document.getElementById('buscador').value.trim();
+  if (!q) return;
+  // si parece URL carga directo, si no busca en Google
+  const isUrl = /^[a-zA-Z0-9\-]+\./.test(q) || /^https?:\/\//i.test(q);
+  abrir('browser');
+  const input = document.getElementById('url-browser');
+  input.value = isUrl ? (q.startsWith('http') ? q : 'https://' + q) : ('https://www.google.com/search?q=' + encodeURIComponent(q));
+  cargarSitio();
+}
+window.quickSearch = quickSearch;
+
+// Cargar sitio en iframe respetando bloqueo X-Frame
+function cargarSitio() {
+  const input = document.getElementById('url-browser');
+  const visor  = document.getElementById('visor-browser');
+  if (!input || !visor) return;
+  let url = input.value.trim();
+  if (!url) return;
+  if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+  // algunos sitios bloquean iframe con X-Frame-Options. Detectamos fallo heurístico con timeout
+  visor.src = 'about:blank';
+  setTimeout(() => { try { visor.src = url; } catch (e) { visor.src = 'about:blank'; } }, 50);
+}
+window.cargarSitio = cargarSitio;
+
+// Lector simple de archivos
+function leerArchivos(e) {
+  const files = e.target.files;
+  const list = document.getElementById('file-list');
+  list.innerHTML = '';
+  Array.from(files).forEach(f => {
+    const item = document.createElement('div');
+    item.className = 'file-item';
+    item.innerHTML = `<div>${f.name} <small style="color:#9aa;">(${Math.round(f.size/1024)} KB)</small></div>`;
+    const btn = document.createElement('button');
+    btn.textContent = 'Ver texto';
+    btn.onclick = () => {
+      if (!f.type.startsWith('text')) return alert('No es un archivo de texto');
+      const reader = new FileReader();
+      reader.onload = () => crearVentana(f.name, `<pre style="white-space:pre-wrap;max-height:240px;overflow:auto;">${escapeHtml(reader.result)}</pre>`);
+      reader.readAsText(f);
+    };
+    item.appendChild(btn);
+    list.appendChild(item);
+  });
+}
+window.leerArchivos = leerArchivos;
+
+// Reloj zona Centro México
+function actualizarReloj(){
+  const opts = { timeZone: 'America/Mexico_City', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12:false, day: '2-digit', month: '2-digit', year: 'numeric' };
+  const ahora = new Intl.DateTimeFormat('es-MX', opts).format(new Date());
+  document.getElementById('reloj').textContent = ahora;
+}
+
+// Guardar posiciones de ventanas en sessionStorage o localStorage según persistState
+function savePositions(){
+  const nodes = document.querySelectorAll('[data-window]');
+  const obj = {};
+  nodes.forEach(n => {
+    if (!n.id) return;
+    obj[n.id] = { left: n.style.left || '', top: n.style.top || '', display: n.style.display || '' };
+  });
+  if (persistState) localStorage.setItem(windowsStateKey, JSON.stringify(obj));
+  else sessionStorage.setItem(windowsStateKey, JSON.stringify(obj));
+}
+</script>
+
+<!--------
+// escape HTML para mostrar archivos
+function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+``--
+
+# Instrucciones rápidas
+
+- Guarda los tres bloques en archivos: index.html, OS.css, OS.js.  
+- Abre index.html en tu navegador para probar.  
+- Usa el campo de la barra para buscar o cargar URLs.  
+- Pulsa el botón ➕ o el botón "Nueva nota" para generar ventanas dinámicas.  
+- Marca "Guardar posiciones en esta sesión" si quieres que las posiciones se guarden en localStorage.  
+- Ten en cuenta que algunos sitios bloquean ser cargados en iframe por políticas de seguridad.
+
+Si quieres, te doy una versión con iconos, animaciones de apertura o la lógica para minimizar a una “taskbar” con botones por cada ventana abierta. ¿Cuál quieres que añadamos ahora?
+
 ### Terminal en el navegador y qué puedes y no puedes hacer
 
 - **No puedes ejecutar directamente comandos del sistema** como `npm install` o binarios nativos desde una página web por razones de seguridad y aislamiento del navegador.  
@@ -46,24 +455,11 @@ HTML (snippet para tu ventana de terminal)
     </div>
   </div>
 </div>
-```
 
-CSS (añadir a OS.css)
-```css
-/* Terminal UI básica */
-.terminal{width:520px;background:#0f1113;color:#cfe8d6;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.6)}
-.term-body{padding:10px;font-family:monospace;font-size:13px}
-.term-output{height:240px;overflow:auto;background:#071014;padding:8px;border-radius:6px;border:1px solid #0b2a30}
-.term-line{white-space:pre-wrap;margin-bottom:6px}
-.term-input-line{display:flex;gap:8px;align-items:center;margin-top:8px}
-.prompt{color:#66e0a3;font-weight:700}
-.term-input{flex:1;background:transparent;border:none;color:inherit;outline:none;font-family:monospace;font-size:13px}
-.term-btns{display:flex;gap:6px}
-```
-
-JavaScript (terminal core para OS.js o terminal.js)
-```js
-// Terminal emulada - simple pero funcional
+<script>
+////JavaScript (terminal core para OS.js o terminal.js)
+////js
+//// Terminal emulada - simple pero funcional
 const termOutput = () => document.getElementById('term-output');
 const termInput = () => document.getElementById('term-input');
 
@@ -199,9 +595,10 @@ function resolvePath(p) {
 document.addEventListener('DOMContentLoaded', () => {
   initTerminal();
 });
-```
-
----
+  </script>
+          <!-------
+        </archivo>
+      </history.length>
 
 ### Cómo ejecutar `npm install` realmente desde tu interfaz
 
@@ -229,7 +626,8 @@ document.addEventListener('DOMContentLoaded', () => {
 - No pegues esto en producción sin asegurar autenticación, sanitizar inputs, y aislar procesos con contenedores.
 
 Node pseudocódigo (server.js)
-```js
+          ----->   <script>
+/////js
 const WebSocket = require('ws');
 const { spawn } = require('child_process');
 const wss = new WebSocket.Server({ port: 8080 });
@@ -245,10 +643,8 @@ wss.on('connection', ws => {
     }
   });
 });
-```
-
-Cliente frontend (esquema)
-```js
+///Cliente frontend (esquema)
+/////```js
 const ws = new WebSocket('wss://tu-backend.com/exec');
 ws.onmessage = e => {
   const msg = JSON.parse(e.data);
@@ -256,10 +652,10 @@ ws.onmessage = e => {
   if (msg.type === 'stderr') appendLine(msg.data);
 };
 ws.onopen = () => ws.send(JSON.stringify({ cmd: 'npm install', cwd: '/workspace/proyecto' }));
-```
-
----
-
+</script>
+        <!---</archivo>
+      </history.length>
+          <!-------
 ### Resumen rápido y próximos pasos que puedo darte ahora
 
 - Ya tienes una terminal emulada que sirve para experimentar y crear FS virtual y ejecutar JS con `runjs`.  
@@ -270,3 +666,7 @@ ws.onopen = () => ws.send(JSON.stringify({ cmd: 'npm install', cwd: '/workspace/
   - integrar StackBlitz WebContainer embed si prefieres evitar backend.
 
 ¿Quieres que implemente la integración de la terminal con el taskbar ahora y luego prepare el ejemplo de backend Docker + WebSocket para correr `npm`?
+
+        ----->
+        </body>
+</html>
