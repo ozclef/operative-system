@@ -1,0 +1,24 @@
+[
+  {
+    "id": "chat-bius",
+    "name": "Chat Bius",
+    "icon": "/icons/chat.svg",
+    "type": "iframe",
+    "url": "https://raw.githubusercontent.com/ozclef/bius/main/chat/index.html",
+    "embedAllowed": true,
+    "defaultWidth": 800,
+    "defaultHeight": 600,
+    "resizable": true,
+    "tags": ["chat","ia"]
+  },
+  {
+    "id": "player",
+    "name": "Reproductor",
+    "type": "iframe",
+    "url": "https://example.com/player",
+    "embedAllowed": false,
+    "defaultWidth": 480,
+    "defaultHeight": 360,
+    "resizable": true
+  }
+]
