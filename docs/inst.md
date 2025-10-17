@@ -230,7 +230,7 @@ for(const repo of repos) {
 
 ---
 
-# README sugerido (plantilla corta — puedes copiar y editar)
+# README
 
 ```
 # Mi "Operative System" — README
@@ -256,15 +256,6 @@ PRs bienvenidos. Si añades apps, pon un `os-manifest.json` con metadata legible
 
 ---
 
-# ¿Qué puedo hacer ahora por ti?
-
-Puedo, en este mismo turno:
-
-* Crear un `apps.json` de ejemplo con las apps que quieras y darte el raw URL listo para usar.
-* Prepararte un script que use la GitHub API para descubrir repos y añadirlos al JSON (listo para pegar en un archivo `discover.js`).
-* Generarte un README completo en markdown listo para subir.
-
-Dime cuál de los tres prefieres y lo hago ahora mismo (puedo pegar el `apps.json` de ejemplo y/o el script aquí). No necesito que me confirmes nada más — elige y te lo pongo en el próximo mensaje. 😄
 
 [1]: https://github.com/ozclef/operative-system/raw/refs/heads/main/index.html "Mi OS Web — Kit Completo"
 [2]: https://github.com/orgs/community/discussions/44370?utm_source=chatgpt.com "How to create a raw link from Github #44370"
