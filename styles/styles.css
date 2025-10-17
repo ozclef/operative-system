@@ -1,0 +1,61 @@
+    
+:root{
+  --bg:#111218; --window:#1f2226; --topbar:#2b2f33; --accent:#16a085; --muted:#9aa;
+  --text:#eaeef0; --glass:rgba(255,255,255,0.03);
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+.ventana{position:absolute;display:block;width:420px;background:var(--window);border-radius:8px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 10px 30px rgba(0,0,0,0.6);overflow:hidden}
+.ventana.small{width:420px}
+.ventana.grande{width:620px;height:460px}
+.topbar{background:linear-gradient(180deg,var(--topbar),#333);padding:8px 10px;display:flex;align-items:center;justify-content:space-between;cursor:move;user-select:none}
+.topbar span{font-weight:600}
+.topbar-controls{display:flex;gap:6px}
+.topbar-controls button{background:transparent;border:none;color:var(--text);padding:4px 8px;border-radius:6px;cursor:pointer}
+.contenido{padding:12px;font-size:14px}
+.apps-lista{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.apps-lista button{background:#2b2b2b;border:none;padding:8px 10px;border-radius:8px;color:var(--text);cursor:pointer}
+.browser-controls{display:flex;gap:8px;align-items:center}
+.browser-controls input{flex:1;padding:8px;border-radius:8px;border:none;background:#222;color:var(--text)}
+.browser-controls button{padding:8px 12px;border-radius:8px;border:none;background:var(--accent);color:#042;cursor:pointer}
+.hint{color:var(--muted);font-size:12px;margin-top:8px}
+
+/* Terminal */
+.term-body{font-family:monospace}
+.term-output{height:160px;overflow:auto;background:#05060a;padding:8px;border-radius:6px;border:1px solid #0b1720;color:#cfe8d6}
+.term-line{white-space:pre-wrap;margin-bottom:6px}
+.term-input-line{display:flex;gap:8px;align-items:center;margin-top:8px}
+.prompt{color:#66e0a3;font-weight:700}
+.term-input{flex:1;background:transparent;border:none;color:inherit;outline:none;font-family:monospace}
+
+/* File list */
+#file-list{margin-top:8px;display:flex;flex-direction:column;gap:6px}
+.file-item{background:#141618;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.02);display:flex;justify-content:space-between;align-items:center}
+
+/* Player */
+#player-area video,#player-area audio{border-radius:6px;background:#000}
+#playlist{margin-top:8px;display:flex;flex-direction:column;gap:6px}
+.play-item{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:6px;background:#141618}
+
+/* Taskbar */
+.barra-inferior{position:fixed;left:0;right:0;bottom:0;height:56px;background:#0f1113;display:flex;align-items:center;justify-content:space-between;padding:6px 12px;gap:12px;z-index:9999;box-shadow:0 -8px 24px rgba(0,0,0,0.6)}
+.taskbar-left{display:flex;align-items:center;gap:8px}
+.taskbar-left input{padding:8px;border-radius:8px;border:none;background:#161718;color:var(--text);width:220px}
+.taskbar-left button{background:#222;border:none;padding:8px 10px;border-radius:8px;color:var(--text);cursor:pointer}
+.taskbar-center{display:flex;align-items:center;gap:6px;flex:1;justify-content:center;overflow:auto;padding:0 8px}
+.task-btn{display:flex;align-items:center;gap:8px;padding:6px 10px;background:#202225;border-radius:8px;color:var(--text);cursor:pointer;border:none;min-width:90px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.task-btn.active{background:linear-gradient(90deg,var(--accent),#16a085);color:#042;box-shadow:0 6px 18px rgba(0,0,0,0.6)}
+.taskbar-right{display:flex;align-items:center;gap:8px}
+.reloj{min-width:120px;text-align:right;color:var(--muted);font-weight:600}
+
+/* Responsive */
+@media (max-width:820px){
+  .ventana{width:90%;left:5% !important;top:60px !important}
+  .taskbar-left input{width:120px}
+  .taskbar-center{display:none}
+}
+@media (max-width:420px){
+  .topbar span{font-size:14px}
+  .barra-inferior{height:64px;padding:10px}
+  .taskbar-left input{display:none}
+}
