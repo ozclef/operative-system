@@ -5,6 +5,9 @@
 # 🧠 Proyecto Web Modular
 Este repositorio contiene un entorno web modular diseñado para ser eficiente, escalable y fácil de mantener. Ideal para proyectos creativos, educativos o experimentales que integran múltiples componentes como editores, reproductores multimedia, terminales, y más.
 
+<img width="974" height="530" alt="image" src="https://github.com/user-attachments/assets/d0f488b8-a492-4b59-b4fe-e4a9eaa2c3ad" />
+
+
 
 # 🚀 Características
 Diseño modular: cada componente funciona como una app independiente dentro del sistema.
